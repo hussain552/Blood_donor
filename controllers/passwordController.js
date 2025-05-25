@@ -1,5 +1,5 @@
 import express from "express";
-import BloodDonor from "../Models/DonorsList.js"; // Ensure correct case
+import BloodDonor from "../MOdels/DonorsList.js"; // Ensure correct case
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import bcrypt from "bcryptjs";
