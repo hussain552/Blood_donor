@@ -14,14 +14,13 @@ import DeleteUpdateDonor from   "./Routes/Admin/DeleteAndUpdateDonot.js"
 dotenv.config();
 const app = express();
 
-const cors = require('cors');
-
 app.use(cors({
   origin: true, // Reflects the request origin dynamically
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
+
 
 
 const PORT = process.env.PORT || 5000;
