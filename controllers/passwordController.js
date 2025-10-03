@@ -1,11 +1,14 @@
 import express from "express";
 import BloodDonor from "../MOdels/DonorsList.js"; // Ensure correct case
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
+import sgMail from "@sendgrid/mail";
 
 dotenv.config();
+
+// Set SendGrid API key
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // Step 1: Request Password Reset
 export const forgotPassword = async (req, res) => {
@@ -14,7 +17,6 @@ export const forgotPassword = async (req, res) => {
         console.log("Received forgot password request for:", emailId);
 
         const user = await BloodDonor.findOne({ emailId });
-
         if (!user) {
             console.log("User not found");
             return res.status(404).json({ message: "User not found" });
@@ -27,22 +29,16 @@ export const forgotPassword = async (req, res) => {
         const resetLink = `${process.env.FRONTEND_URL}/reset-password/${token}`;
         console.log("Reset Link:", resetLink);
 
-        // Configure Email Transporter
-        const transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
-        });
-
-        // Send Email
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
+        // Send Email via SendGrid
+        const msg = {
             to: user.emailId,
+            from: "ahamedhussainpasha@gmail.com", // Verified sender in SendGrid
+            replyTo: "ahamedhussainpasha@gmail.com",
             subject: "Password Reset",
             html: `<p>Click <a href="${resetLink}">here</a> to reset your password. This link is valid for 15 minutes.</p>`,
-        });
+        };
+
+        await sgMail.send(msg);
 
         console.log("Password reset email sent to:", user.emailId);
         res.json({ message: "Reset link sent to email" });
